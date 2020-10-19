@@ -1,0 +1,25 @@
+{
+	"author": {
+	  "name": "Aritz Beobide-Cardinal",
+	  "email": "aritz@aritzcracker.ca"
+	},
+	"bugs": {
+	  "url": "https://github.com/ARitz-Cracker/markdown-like/issues"
+	},
+	"dependencies": {},
+	"description": "Simple markdown-like HTML generation",
+	"devDependencies": {},
+	"homepage": "https://github.com/ARitz-Cracker/markdown-like",
+	"license": "MIT",
+	"main": "index.js",
+	"name": "markdown-like",
+	"repository": {
+	  "type": "git",
+	  "url": "git+https://github.com/ARitz-Cracker/markdown-like.git"
+	},
+	"scripts": {},
+	"version": "1.0.0",
+	"browserRequirifier":{
+		"include":[]
+	}
+  }
