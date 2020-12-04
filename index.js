@@ -5,10 +5,29 @@ const specialCharsMap = {
 	'"': '&quot;',
 	"'": '&apos;'
 };
+/**
+ * Escapes special HTML characters [&<>"']
+ * @param {string} str 
+ * @returns {string}
+ */
 exports.escapeHTMLSpecialChars = function(str) {
 	return str.replace(/[&<>"']/g, function(m) { return specialCharsMap[m]; });
 }
-// Not going to do underlines cuz anything underlined is a clickable link
+/**
+ * Turns the specified string into HTML using simple, markdown-like syntax
+ * - `*bold*` ➡ `<b>bold</b>`
+ * - `_italic_` ➡ `<i>italic</i>`
+ * - `~strikethrough~` ➡ `<s>strikethrough</s>`
+ * - \`monospace\` ➡ `<span class="monospace">monospace</span>`
+ * -`super^script^` ➡ `super<sup>script</sup>`
+ * -`<td>sub|script|</td>` ➡ `<td>sub<sub>script</sub></td>`
+ * -`[link](http://aritzcracker.ca)` ➡ `<a href="http://aritzcracker.ca">link</a>`
+ * -`[@new tab link](http://aritzcracker.ca)` ➡ `<a href="http://aritzcracker.ca" target="_blank">new tab link</a>`
+ * - `escaping\_special\_characters\*` ➡ `escaping_special_characters*`
+ * @param {string} str string to parse
+ * @param {string} [newlineSeperator=" "] replace newlines with what's specified
+ * @returns {string}
+ */
 exports.markdownToHTML = function(str, newlineSeperator = " "){
 	return exports.escapeHTMLSpecialChars(str)
 		// Remove useless CR
