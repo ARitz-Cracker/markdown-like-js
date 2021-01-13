@@ -5,13 +5,33 @@ const specialCharsMap = {
 	'"': '&quot;',
 	"'": '&apos;'
 };
+let regexString = "[&<>\"'";
+for(let i = 0; i < 0x10; i += 1){
+	regexString += "\\x0" + i.toString(16);
+	specialCharsMap[String.fromCharCode(i)] = "&#" + i + ";";
+}
+for(let i = 0x10; i < 0x20; i += 1){
+	regexString += "\\x" + i.toString(16);
+	specialCharsMap[String.fromCharCode(i)] = "&#" + i + ";";
+}
+for(let i = 0x80; i < 0xa0; i += 1){
+	regexString += "\\x" + i.toString(16);
+	specialCharsMap[String.fromCharCode(i)] = "&#" + i + ";";
+}
+regexString += "]";
+const htmlEntitiesRegex = new RegExp(regexString, "g");
 /**
  * Escapes special HTML characters [&<>"']
- * @param {string} str 
+ * @param {string} str
+ * @param {boolean} [escapeControlChars=false] if true, any control characters will be escaped
  * @returns {string}
  */
-exports.escapeHTMLSpecialChars = function(str) {
-	return str.replace(/[&<>"']/g, function(m) { return specialCharsMap[m]; });
+exports.escapeHTMLSpecialChars = function(str, escapeControlChars = false) {
+	if(escapeControlChars){
+		return str.replace(htmlEntitiesRegex, m => specialCharsMap[m]);
+	}else{
+		return str.replace(/[&<>"']/g, m => specialCharsMap[m]);
+	}
 }
 /**
  * Turns the specified string into HTML using simple, markdown-like syntax
@@ -19,6 +39,7 @@ exports.escapeHTMLSpecialChars = function(str) {
  * - `_italic_` ➡ `<i>italic</i>`
  * - `~strikethrough~` ➡ `<s>strikethrough</s>`
  * - \`monospace\` ➡ `<span class="monospace">monospace</span>`
+ * - `"quotes"` ➡ `<q>quotes</q>`
  * -`super^script^` ➡ `super<sup>script</sup>`
  * -`<td>sub|script|</td>` ➡ `<td>sub<sub>script</sub></td>`
  * -`[link](http://aritzcracker.ca)` ➡ `<a href="http://aritzcracker.ca">link</a>`
@@ -26,12 +47,13 @@ exports.escapeHTMLSpecialChars = function(str) {
  * - `escaping\_special\_characters\*` ➡ `escaping_special_characters*`
  * @param {string} str string to parse
  * @param {string} [newlineSeperator=" "] replace newlines with what's specified
+ * @param {boolean} [escapeControlChars=false] if true, any control characters will be escaped
  * @returns {string}
  */
-exports.markdownToHTML = function(str, newlineSeperator = " "){
-	return exports.escapeHTMLSpecialChars(str)
+exports.markdownToHTML = function(str, newlineSeperator = " ", escapeControlChars = false){
+	return exports.escapeHTMLSpecialChars(str, escapeControlChars)
 		// Remove useless CR
-		.replace(/\r/, "")
+		.replace(escapeControlChars ? /&#13;/g : /\r/g, "")
 		// Bold
 		.replace(/([^\\]|^)\*(.*?[^\\])\*/g, (match, p1, p2, offset, str) => {
 			return p1 + "<b>" + p2 + "</b>";
@@ -42,6 +64,11 @@ exports.markdownToHTML = function(str, newlineSeperator = " "){
 			return p1 + "<i>" + p2 + "</i>";
 		})
 		.replace(/\\\_/g, "_")
+		// quotes
+		.replace(/([^\\]|^)\"(.*?[^\\])\"/g, (match, p1, p2, offset, str) => {
+			return p1 + "<q>" + p2 + "</q>";
+		})
+		.replace(/\\\"/g, "\"")
 		// strike
 		.replace(/([^\\]|^)\~(.*?[^\\])\~/g, (match, p1, p2, offset, str) => {
 			return p1 + "<s>" + p2 + "</s>";
@@ -83,5 +110,5 @@ exports.markdownToHTML = function(str, newlineSeperator = " "){
 			return p1 + "<a href=\"" + url + "\">" + linkName + "</a>";
 		})
 		// Newline seperation (Something like "<br>" or "</p><p>")
-		.replace(/\n/g, newlineSeperator);
+		.replace(escapeControlChars ? /&#10;/g : /\n/g, newlineSeperator);
 }
