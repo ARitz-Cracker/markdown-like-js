@@ -109,6 +109,7 @@ exports.markdownToHTML = function(str, newlineSeperator = " ", escapeControlChar
 			}
 			return p1 + "<a href=\"" + url + "\">" + linkName + "</a>";
 		})
+		.replace(/\\([\[\]\(\)])/g, (fullMatch, escapedChar) => escapedChar)
 		// Newline seperation (Something like "<br>" or "</p><p>")
 		.replace(escapeControlChars ? /&#10;/g : /\n/g, newlineSeperator);
 }
