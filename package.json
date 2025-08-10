@@ -8,7 +8,10 @@
 	},
 	"dependencies": {},
 	"description": "Simple markdown-like HTML generation",
-	"devDependencies": {},
+	"devDependencies": {
+		"@types/node": "^18.16.0",
+		"typescript": "^5.0.4"
+	},
 	"homepage": "https://github.com/ARitz-Cracker/markdown-like",
 	"license": "MIT",
 	"main": "index.js",
@@ -18,7 +21,7 @@
 	  "url": "git+https://github.com/ARitz-Cracker/markdown-like.git"
 	},
 	"scripts": {},
-	"version": "1.1.1",
+	"version": "1.2.0-dev.1",
 	"browserRequirifier":{
 		"include":[]
 	}
